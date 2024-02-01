@@ -14,7 +14,6 @@
 #include <iostream>
 #include <cmath>
 
-
 #include "zmod.h"
 #include "zmoddac1411.h"
 
@@ -32,12 +31,12 @@
  * Simple DAC test, using sine values populated in the buffer.
 * @param amplitude - the amplitude for the generated sine
 * @param N_sample - the number of generated samples
-* @param PI - the phase for the generated sine
+* @param step - phase increment of the signal's sample
 * @param channel - the channel where samples will be generated
 * @param frequencyDivider - the output frequency divider
 * @param gain - the gain for the channel
 */
-void dacRampDemo(float amplitude, int N_sample, float phase, uint8_t channel, uint8_t frequencyDivider, uint8_t gain)
+void dacRampDemo(float amplitude, int N_sample, int step, uint8_t channel, uint8_t frequencyDivider, uint8_t gain)
 {
 	ZMODDAC1411 dacZmod(DAC_BASE_ADDR, DAC_DMA_BASE_ADDR, IIC_BASE_ADDR, DAC_FLASH_ADDR, DAC_DMA_IRQ);
 	uint32_t *buf;
@@ -57,21 +56,12 @@ void dacRampDemo(float amplitude, int N_sample, float phase, uint8_t channel, ui
 	dacZmod.setOutputSampleFrequencyDivider(frequencyDivider);
 	dacZmod.setGain(channel, gain);
 
-    float sample_value_init = 0;
-    sample_value = sample_value_init;
-    float sample_freq = 0;
-    
+    sample_value = 0;
+
     address = 0;
-    for (int i = 0; i < N_sample; i++) {
-        sample_freq = sin((2 * PI * i / N_sample) + phase);
-        
-        if (sample_value_init + sample_freq < amplitude) {
-            sample_value = sample_value_init + sample_freq;
-        } 
-        else {
-            sample_value = amplitude;
-        }
-        
+    for (int i = 0; i < N_sample; i+=step) {
+        sample_value = amplitude * sin((2 * PI * i / N_sample));
+
         valRaw = dacZmod.getSignedRawFromVolt(sample_value , gain);
 		valBuf = dacZmod.arrangeChannelData(channel, valRaw);
 		buf[address++] = valBuf;
@@ -85,12 +75,12 @@ void dacRampDemo(float amplitude, int N_sample, float phase, uint8_t channel, ui
 
 int main() {
 	std::cout << "ZmodDAC1411 Demo\n";
-	// amplitude 				2 Vpp
-	// N_sample 				128
-    // phase                    0
+	// amplitude 				2 V
+	// N_sample 				64
+	// step 					1
 	// channel 					CH1
 	// Output Frequency Divider	1
 	// gain						HIGH - Corresponds to HIGH input Range
-	dacRampDemo(2, 64, 0, 0, 1, 1);
+	dacRampDemo(1.5, 64, 1, 0, 1, 1);
 	return 0;
 }
