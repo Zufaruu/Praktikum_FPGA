@@ -79,8 +79,8 @@ int main() {
 	// N_sample 				64
 	// step 					1
 	// channel 					CH1
-	// Output Frequency Divider	1
+	// Output Frequency Divider	2
 	// gain						HIGH - Corresponds to HIGH input Range
-	dacRampDemo(1.5, 64, 1, 0, 1, 1);
+	dacRampDemo(2, 64, 1, 0, 2, 1);
 	return 0;
 }

@@ -81,8 +81,8 @@ void dacRampDemo(float offset, float amplitude, float step, uint8_t channel, uin
 int main() {
 	std::cout << "ZmodDAC1411 Demo\n";
 	// offset 					2 V
-	// amplitude 				3 V
-	// step 					10 mV
+	// amplitude 				3 Vpp
+	// step 					0.01 V
 	// channel 					CH1
 	// Output Frequency Divider	2
 	// gain						HIGH - Corresponds to HIGH input Range
